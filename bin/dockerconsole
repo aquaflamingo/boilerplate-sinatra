@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+# TODO - change this to your applications name
+docker exec -it boilerplate-sinatra_app_1 irb -r ./app.rb
