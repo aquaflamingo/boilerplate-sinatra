@@ -1,3 +1,4 @@
 #!/bin/zsh
 
+# See https://blog.robsdomain.com/sinatra-circleci-setup/ on how to setup CircleCI to run locally if you do not already have set up 
 circleci config process .circleci/config.yml > process.yml && circleci local execute -c process.yml --job build

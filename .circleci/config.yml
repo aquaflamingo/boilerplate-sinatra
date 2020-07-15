@@ -1,0 +1,49 @@
+version: 2.1
+
+executors:
+  default:
+    working_directory: ~/app
+    docker:
+      - image: circleci/ruby:2.5.5
+        environment:
+          APP_ENV: test
+          RACK_ENV: test
+
+jobs:
+  build:
+    executor: default
+    steps:
+      - checkout
+      - run: |
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+         # Restore bundle cache
+      - restore_cache:
+          name: gems
+          key: app-{{ checksum "Gemfile.lock" }}
+
+      - run:
+          name: install gems
+          command: |
+            gem install bundler:2.0.2
+            bundle install --jobs=5 --path vendor/bundle
+      - save_cache:
+          name: save gem cache
+          key: app-{{ checksum "Gemfile.lock" }}
+          paths:
+              - vendor/bundle
+#      If you you add ActiveRecord uncomment this block
+#      - run:
+#          name: db
+#          command: |
+#            bundle exec rake db:drop db:create db:schema:load --trace
+      - run:
+          name: specs
+          command: |
+            bundle exec rspec --profile 10 --format progress
+
+workflows:
+   version: 2
+   integration:
+      jobs:
+         - build 
